@@ -397,7 +397,41 @@
   <div class="grid" id="grid"></div>
   <div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastMsg"></span></div>
 
-  <script>
+  <script type="module">
+    import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
+    import { initializeApp,getApps } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
+    import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js';
+
+
+// TODO: Replace the following with your app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBh-Mm7u6xFeTy00QnSbF7VyYyacZHjZMg",
+  authDomain: "smartplug-97fc0.firebaseapp.com",
+  databaseURL: "https://smartplug-97fc0-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "smartplug-97fc0",
+  storageBucket: "smartplug-97fc0.firebasestorage.app",
+  messagingSenderId: "29401613858",
+  appId: "1:29401613858:web:9a68adc483e918689f2c7b"
+};
+
+const app = initializeApp(firebaseConfig);
+if(getApps().length>0){
+  console.log("App Initilization Successful")
+}
+let email = "kittiphasa29@gmail.com"
+let password = "lukchan090554"
+const auth = getAuth();
+signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log("Login Successfull")
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  });
     const outlets = [
       { id: 'SP-01', name: 'Living Room Lamp' },
       { id: 'SP-02', name: 'Office Desk' },
@@ -407,7 +441,10 @@
 
     const timers = {};
     let toastTimer;
-
+const db = getDatabase();
+function setData(idx,val){
+  let names = ["one","two","three","four"];
+  set(ref(db, 'data/'+names[idx]),val);}
     function showToast(msg, color) {
       const t = document.getElementById('toast');
       const d = document.getElementById('toastDot');
@@ -422,51 +459,29 @@
       if (active) card.classList.add('active');
       else card.classList.remove('active');
     }
-
-    function turnOn(idx) {
+  console.log("i will be drfined");
+    window.turnOn = function(idx) {
       const card = document.getElementById('card-' + idx);
       setActive(card, true);
-      const request1 = new Request("http://192.168.1.200/api", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `on=${idx}`,
-      });
+      
       
       showToast(`${outlets[idx].name} → ON`, 'var(--on)');
-      fetch(request1)
-    }
+      setData(idx,0);
+    };
 
-    function turnOff(idx) {
+    window.turnOff = function(idx) {
       const card = document.getElementById('card-' + idx);
       setActive(card, false);
-      const request1 = new Request("http://192.168.1.200/api", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `off=${idx}`,
-      });
-      showToast(`${outlets[idx].name} → OFF`, 'var(--off)');
-      fetch(request1)
-      
+      setData(idx,-1);
     }
 
-    function setTimer(idx) {
+    window.setTimer = function(idx) {
       const input = document.getElementById('timer-' + idx);
       const mins = parseFloat(input.value);
       if (!mins || mins <= 0) { showToast('Enter a valid duration', 'var(--muted)'); return; }
-      showToast(`${outlets[idx].name} — OFF in ${mins} min`, 'var(--accent)');
-      const request1 = new Request("http://192.168.1.200/api", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `offin=${idx}-${mins}`,
-      });
-      fetch(request1)
+      setData(idx,mins);
     }
+    
 
     const grid = document.getElementById('grid');
 
@@ -490,15 +505,15 @@
         <div class="status-dot"></div>
       </div>
       <div class="btn-row">
-          <button type="submit" class="btn-on" onclick="turnOn(${i})">⏻ On Now</button>
-          <button type="submit" class="btn-off" onclick="turnOff(${i})">⏻ Off Now</button>
+          <button type="submit" class="btn-on" onclick="turnOn(${i})" id="onbutton-${i}">⏻ On Now</button>
+          <button type="submit" class="btn-off" onclick="turnOff(${i})" id="offbutton-${i}">⏻ Off Now</button>
         
       </div>
       <div class="timer-row">
           <span class="timer-label">AUTO OFF</span>
           <input class="timer-input" id="timer-${i}" type="number" min="0" step="1" placeholder="0" />
           <span class="timer-unit">MIN</span>
-          <button type="submit" class="btn-timer" onclick="setTimer(${i})">SET</button>
+          <button type="submit" class="btn-timer" onclick="setTimer(${i})" id="timebutton-${i}">SET</button>
       </div>
     `;
       grid.appendChild(card);
@@ -508,3 +523,4 @@
 </body>
 
 </html>
+
