@@ -402,7 +402,7 @@
     import { initializeApp,getApps } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
     import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js';
 
-
+console.log(import.meta.env.VITE_PASSWORD);
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_KEY,
   authDomain: "smartplug-97fc0.firebaseapp.com",
@@ -412,6 +412,7 @@ const firebaseConfig = {
   messagingSenderId: "29401613858",
   appId: "1:29401613858:web:9a68adc483e918689f2c7b"
 };
+    
 
 const app = initializeApp(firebaseConfig);
 if(getApps().length>0){
