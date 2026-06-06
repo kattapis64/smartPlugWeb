@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartPlug Control</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;500;700&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
+    <head>
+        <meta charset="utf-8">
+            <meta content="width=device-width, initial-scale=1.0" name="viewport">
+                <title>
+                    SmartPlug Control
+                </title>
+                <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;500;700&display=swap" rel="stylesheet">
+                    <style>
+                        :root {
       --bg: #0d0f14;
       --surface: #151820;
       --border: #232736;
@@ -378,29 +378,42 @@
         transform: translateY(0);
       }
     }
-  </style>
-</head>
-
-<body>
-<h1>VERSION 2</h1>
-  <header>
-    <div class="logo">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
-      </svg>
-    </div>
-    <h1>SMART<span>PLUG</span></h1>
-    <span class="subtitle">4 OUTLETS ONLINE</span>
-  </header>
-
-  <div class="grid" id="grid"></div>
-  <div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastMsg"></span></div>
-
-  <script type="module">
-    import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
+                    </style>
+                </link>
+            </meta>
+        </meta>
+    </head>
+    <body>
+        
+        <header>
+            <div class="logo">
+                <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z">
+                    </path>
+                </svg>
+            </div>
+            <h1>
+                SMART
+                <span>
+                    PLUG
+                </span>
+            </h1>
+            <span class="subtitle">
+                4 OUTLETS ONLINE
+            </span>
+        </header>
+        <div class="grid" id="grid">
+        </div>
+        <div class="toast" id="toast">
+            <span class="dot" id="toastDot">
+            </span>
+            <span id="toastMsg">
+            </span>
+        </div>
+        <script type="module">
+            import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
     import { initializeApp,getApps } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
-    import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js';
+    import { get,child,getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js';
 
 console.log(import.meta.env.VITE_PASSWORD);
 const firebaseConfig = {
@@ -442,24 +455,46 @@ signInWithEmailAndPassword(auth, email, password)
     const timers = {};
     let toastTimer;
 const db = getDatabase();
-function setData(idx,val){
-  let names = ["one","two","three","four"];
-  set(ref(db, 'data/'+names[idx]),val);}
-    function showToast(msg, color) {
-      const t = document.getElementById('toast');
-      const d = document.getElementById('toastDot');
-      const m = document.getElementById('toastMsg');
-      d.style.background = color;
-      m.textContent = msg;
-      t.classList.add('show');
-      toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+const dbRef = ref(db);
+let t;
+function setData(idx,valu){
+  let res;
+  get(child(dbRef,"data")).then((snapshot)=>{
+    t = snapshot.val();
+
+    let li = t.split(" ");
+        console.log(li);
+
+    if(valu<0){
+      li[idx]="f";
+    }else if(valu==0){
+      li[idx]="n";
+    }else{
+      li[idx]=`${valu}`;
+
     }
+    console.log(li);
+    res = li.join(" ");
+    console.log(res);
+    set(ref(db,"/data/"),res);
+  })
+  
+}
+
+function showToast(msg, color) {
+  const t = document.getElementById('toast');
+  const d = document.getElementById('toastDot');
+  const m = document.getElementById('toastMsg');
+  d.style.background = color;
+  m.textContent = msg;
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
 
     function setActive(card, active) {
       if (active) card.classList.add('active');
       else card.classList.remove('active');
     }
-  console.log("i will be drfined");
     window.turnOn = function(idx) {
       const card = document.getElementById('card-' + idx);
       setActive(card, true);
@@ -518,9 +553,6 @@ function setData(idx,val){
     `;
       grid.appendChild(card);
     });
-    showToast("TEST", "red");
-  </script>
-</body>
-
+        </script>
+    </body>
 </html>
-
