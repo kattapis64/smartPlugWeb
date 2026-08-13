@@ -465,7 +465,7 @@ function setData(idx,valu){
   }else{
     res = valu;
   }
-  set(ref(db,`/data/{idx}`),res);
+  set(ref(db,`/data/r${idx+1}`),res);
   
 }
 
