@@ -458,25 +458,14 @@ const dbRef = ref(db);
 let t;
 function setData(idx,valu){
   let res;
-  get(child(dbRef,"data")).then((snapshot)=>{
-    t = snapshot.val();
-
-    let li = t.split(" ");
-        console.log(li);
-
-    if(valu<0){
-      li[idx]="f";
-    }else if(valu==0){
-      li[idx]="n";
-    }else{
-      li[idx]=`${valu}`;
-
-    }
-    console.log(li);
-    res = li.join(" ");
-    console.log(res);
-    set(ref(db,"/data/"),res);
-  })
+  if(valu<0){
+    res = "f";
+  }else if(valu==0){
+    res = "n";
+  }else{
+    res = valu;
+  }
+  set(ref(db,`/data/{idx}`),res);
   
 }
 
@@ -506,7 +495,7 @@ function showToast(msg, color) {
     window.turnOff = function(idx) {
       const card = document.getElementById('card-' + idx);
       setActive(card, false);
-      setData(idx,-1);
+      setData(idx,-1);  
     }
 
     window.setTimer = function(idx) {
